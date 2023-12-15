@@ -1,9 +1,9 @@
-const { deleteToDo } = require("../controller/todo.controller");
+const {deleteToDo} = require("../controller/todo.controller");
 const ToDoModel = require("../models/todo.model");
 
 class ToDoService{
-    static async createToDo(userId,title,description){
-            const createToDo = new ToDoModel({userId,title,description});
+    static async createToDo(userId,title,desc,timestamp){
+            const createToDo = new ToDoModel({userId,title,desc,timestamp});
             return await createToDo.save();
     }
 

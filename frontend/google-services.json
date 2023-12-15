@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1035464609494",
+    "project_id": "collabnest-c518c",
+    "storage_bucket": "collabnest-c518c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035464609494:android:1191624c547ed16b3a8377",
+        "android_client_info": {
+          "package_name": "collabnest12_.vapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2pF8wRaOD_FdhcDYecxXJRfY0ayIYI1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035464609494:android:f655ab449dd238b83a8377",
+        "android_client_info": {
+          "package_name": "io.flutter.embedding.android.NormalTheme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2pF8wRaOD_FdhcDYecxXJRfY0ayIYI1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

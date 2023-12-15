@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/taskproject.dart';
+import 'package:frontend/forgotpasswordpage.dart';
 import 'home.dart';
 import 'registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,13 +66,8 @@ class _SignInPageState extends State<SignInPage> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Color.fromARGB(218, 3, 47, 83), const Color.fromARGB(255, 5, 53, 92)],
-                begin: FractionalOffset.topLeft,
-                end: FractionalOffset.bottomCenter,
-                stops: [0.0,0.8],
-                tileMode: TileMode.mirror
-            ),
+         color:  Color.fromARGB(255, 150, 125, 241)
+            
           ),
           child: Center(
             child: SingleChildScrollView(
@@ -131,9 +126,20 @@ SizedBox(height: 20,),
                     child: HStack([
                      VxBox(
                         child: "Login".text.black.makeCentered().p16(),
-                      ).white.roundedLg.border(color: Colors.black, width: 1.5).width(300).make().px(16).py(16),
+                      ).white.roundedLg.border(color: const Color.fromARGB(255, 241, 240, 240), width: 1.5).width(300).make().px(16).py(16),
                     ]),
-                  ),
+                  ),GestureDetector(
+  onTap: () {
+    // Navigate to the forgot password page
+    // Implement the ForgotPasswordPage to handle the password reset logic
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+    );
+  },
+  child: "Forgot Password?".text.white.make(),
+),
+
                   GestureDetector(
                     onTap: () {
                       Navigator.push(

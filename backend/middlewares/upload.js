@@ -1,26 +1,33 @@
-function errorHandler(err, req, res, next) {
-    if (typeof err === "string") {
-      // custom application error
-      return res.status(400).json({ message: err });
-    }
-  
-    if (err.name === "ValidationError") {
-      // mongoose validation error
-      return res.status(400).json({ message: err.message });
-    }
-  
-    if (err.name === "UnauthorizedError") {
-      // jwt authentication error
-      return res.status(401).json({ message: "Token not valid" });
-    }
-   
-  
-  
-    // default to 500 server error
-    return res.status(500).json({ message: err.message });
+const multer = require("multer");
+const Path = require('path');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "--" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, callback) => {
+  const acceptableExtensions = [".png", ".jpg", ".mp4"];
+  if (!acceptableExtensions.includes(Path.extname(file.originalname))) {
+    return callback(new Error("Only .png, .jpg and .jpeg format allowed!"));
   }
-  
-  module.exports = {
-    errorHandler,
-  };
-  
+
+  const fileSize = parseInt(req.headers["content-length"]);
+  if (fileSize > 1048576) {
+    return callback(new Error("File Size Big"));
+  }
+
+  callback(null, true);
+};
+
+let upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  fileSize: 1048576, // 10 Mb
+});
+
+module.exports = upload.single("productImage");

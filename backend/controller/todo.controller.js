@@ -2,8 +2,8 @@ const ToDoService = require('../services/todo.service');
 
 exports.createToDo =  async (req,res,next)=>{
     try {
-        const { userId,title, desc } = req.body;
-        let todoData = await ToDoService.createToDo(userId,title, desc);
+        const { userId,title, desc,timestamp } = req.body;
+        let todoData = await ToDoService.createToDo(userId,title, desc,timestamp);
         res.json({status: true,success:todoData});
     } catch (error) {
         console.log(error, 'err---->');

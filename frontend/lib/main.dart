@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/taskproject.dart';
 import 'home.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'loginPage.dart';
-
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+//await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(MyApp(
     token: prefs.getString('token'),
   ));
 }
-
+ 
 class MyApp extends StatelessWidget {
   final token;
   const MyApp({
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primaryColor: Colors.black,
+          primaryColor:  Color.fromARGB(255, 150, 125, 241),
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: (token != null && JwtDecoder.isExpired(token) == false)

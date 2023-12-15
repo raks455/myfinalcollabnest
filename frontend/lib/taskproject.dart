@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/projectpage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'taskpage.dart'; // Import your TaskPage and ProjectPage here
-import 'projectpage.dart'; // Import your TaskPage and ProjectPage here
+import 'taskpage.dart'; 
+import 'projectpage.dart'; 
 
 class TaskProject extends StatefulWidget {
   final token;
@@ -15,41 +15,31 @@ class TaskProject extends StatefulWidget {
 
 class _TaskProjectState extends State<TaskProject> {
   late String userId;
-  TextEditingController _todoTitle = TextEditingController();
-  TextEditingController _todoDesc = TextEditingController();
-  List? items;
+  
+
 
   @override
   void initState() {
+    
+      
     super.initState();
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
 
     userId = jwtDecodedToken['_id'];
-    getTodoList(userId);
+    
   }
 
-  void addTodo() async {
-    // Implementation remains the same
-  }
-
-  void getTodoList(userId) async {
-    // Implementation remains the same
-  }
-
-  void deleteItem(id) async {
-    // Implementation remains the same
-  }
-
+  
   @override
   Widget build(BuildContext context) {
-    int taskCount = items?.length ?? 0;
+   
 
     return DefaultTabController(
       length: 2, // specify the number of tabs
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('ToDo App'),
-          bottom: TabBar(
+      appBar: AppBar(backgroundColor:  Color.fromARGB(255, 150, 125, 241),
+          title: Text('Add Tasks and Projects'),
+          bottom: TabBar(indicatorColor:Colors.white,
             tabs: [
               Tab(text: 'Tasks'),
               Tab(text: 'Projects'),
@@ -62,30 +52,10 @@ class _TaskProjectState extends State<TaskProject> {
             ProjectPage(token: widget.token),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _displayTextInputDialog(context),
-          child: Container(
-            width: 200,
-            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4.0),
-              color:Color.fromARGB(255, 5, 53, 92)
-            ),
-            child: Text(
-              "Add Task",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          tooltip: 'Add ToDo',
-        ),
+       
       ),
     );
   }
 
-  Future<void> _displayTextInputDialog(BuildContext context) async {
-    // Implementation remains the same
-  }
+ 
 }
