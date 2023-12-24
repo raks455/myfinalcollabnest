@@ -1,5 +1,4 @@
-const { product } = require("../models/products.model");
-
+const product=require("../models/products.model");
 async function createProduct(params, callback) {
   if (!params.productName) {
     return callback(
