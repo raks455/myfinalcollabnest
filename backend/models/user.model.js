@@ -15,9 +15,15 @@ const userSchema = new Schema({
         ],
         unique: true,
     },
-    username:{
-        type:String,
-        required:[true,"username can't be empty"]
+    userid:{
+        type: String,
+        required: [true, "UserID can't be empty"],
+        unique: true,
+        // Use a regex pattern for the username
+        match: [
+            /^[\w@]+\d*$/, // Regex pattern allowing letters, @ symbol, and numbers
+            "UserID format is not correct",
+        ],
     },
     fullname:{
         type:String,
@@ -41,10 +47,19 @@ required:[true,"Organization name is required"]
             message: 'Password must be at least 8 characters long and contain at least one number and one capital letter.',
         },
     },
-    isDeleted: {
+    is_admin: {
         type: Boolean,
+        default: false, // Set default value to false for regular users
+      },
+    isDeleted: {
+        type: Number,
         default: false,
     },
+    is_verified:{
+type:Number,
+default:0
+    },
+
     lastUpdated: {
         type: Date,
     },

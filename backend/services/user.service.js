@@ -2,18 +2,24 @@ const UserModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 
 class UserServices{
- 
-    static async registerUser(email,username,fullname,organization,password){
+
+    static async registerUser(email,userid,fullname,organization,password){
         try{
-                console.log("-----Email -Username-- Password-----",email,username,fullname,organization,password);
+                console.log("-----Email -Username-- Password-----",email,userid,fullname,organization,password);
                 
-                const createUser = new UserModel({email,username,fullname,organization,password});
+                const createUser = new UserModel({email,userid,fullname,organization,password});
                 return await createUser.save();
         }catch(err){
             throw err;
         }
     }
-
+    static async getAllUsers() {
+      try {
+        return await UserModel.find({}).select('-password');
+      } catch (error) {
+        throw error;
+      }
+    }
     static async getUserByEmail(email){
         try{
             return await UserModel.findOne({email});

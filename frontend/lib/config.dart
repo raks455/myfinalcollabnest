@@ -1,13 +1,17 @@
-final url = 'http://192.168.1.68:4000/';
-
+final url = 'http://192.168.18.12:4000/';
 final registration = url + "register";
 final login = url + 'login';
+final adminregistration = url + "adminregister";
+final adminlogin = url + 'adminlogin';
 final addtodo = url + 'createToDo';
 final getToDoList = url + 'getUserTodoList';
 final deleteTodo = url + 'deleteToDo';
-final deleteUser = url + ':userId';
-final updateUser = url + 'userId';
+final deleteUser = url + 'deleteuser';
+final updateUser = url + 'updateuser';
+final getalluserlist = url + 'getallusers';
 final addproject = url + 'createProject';
 final getprojectList = url + 'getprojectList';
 final deleteproject = url + 'deleteproject';
-final productsAPI ="/products";
+final productsAPI = url + "/products";
+final addnewsfeed = url + 'products';
+final updatenewsfeed = url + 'products/:id';

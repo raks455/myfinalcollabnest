@@ -1,14 +1,42 @@
 const UserServices = require('../services/user.service');
-
+const nodemailer = require('nodemailer');
 exports.register = async (req, res, next) => {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'santusharma1278@gmail.com',
+          pass: 'idxr navf rrim bqcz',
+        },
+      });
+    async function sendRegistrationEmail(email, userid, password) {
+        const mailOptions = {
+          from: 'santusharma1278@gmail.com',
+          to: email,
+          subject: 'Welcome to CollabNest!',
+          text: `Hello ${userid},\n\n` +
+            'Thank you for registering with CollabNest!\n\n' +'You can login with these details and start your journey with collabnest'+
+            'Your login credentials:\n' +
+            `Username: ${userid}\n` +
+            `Password: ${password}\n\n` +
+            'You can now log in using these credentials.Please keep this credentials safe and don\'t share it with anyone',
+        };
+      
+        try {
+          const info = await transporter.sendMail(mailOptions);
+          console.log('Message sent: %s', info.messageId);
+        } catch (error) {
+          console.error('Error sending email:', error);
+        }
+      }
     try {
         console.log("---req body---", req.body);
-        const { email,username,password,fullname,organization } = req.body;
+        const { email,userid,password,fullname,organization } = req.body;
         const duplicate = await UserServices.getUserByEmail(email);
+    
         if (duplicate) {
             throw new Error(`UserName ${email}, Already Registered`)
         }
-        const response = await UserServices.registerUser(email,username,fullname,organization,password);
+        const response = await UserServices.registerUser(email,userid,fullname,organization,password);
 
         res.json({ status: true, success: 'User registered successfully' });
 
@@ -22,9 +50,9 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     try {
 
-        const { email, password } = req.body;
+        const { email,userid, password } = req.body;
 
-        if (!email || !password) {
+        if (!email || !password || !userid) {
             throw new Error('Parameter are not correct');
         }
         let user = await UserServices.checkUser(email);
@@ -41,7 +69,7 @@ exports.login = async (req, res, next) => {
         // Creating Token
 
         let tokenData;
-        tokenData = { _id: user._id, email: user.email ,username:user.username,fullname:user.fullname,organization:user.organization};
+        tokenData = { _id: user._id, email: user.email ,userid:user.userid,fullname:user.fullname,organization:user.organization};
     
 
         const token = await UserServices.generateAccessToken(tokenData,"secret","1h")
@@ -58,7 +86,7 @@ exports.login = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
     try {
         const userId = req.params.userId; // Assuming userId is part of the route path
-        const {   password,  } = req.body;
+        const {password,email} = req.body;
 console.log(userId);
         // Check if the user exists
         const user = await UserServices.getUserById(userId);
@@ -69,7 +97,7 @@ console.log(userId);
         // Update user details
         const updatedUser = await UserServices.updateUser(userId, {
            
-            password,
+            password,email,fullname
           
         });
 
@@ -80,6 +108,17 @@ console.log(userId);
     }
    
 }
+
+exports.getAllUsers = async (req, res, next) => {
+    try {
+        const users = await UserServices.getAllUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
+    }
+};
 exports.deleteUser = async (req, res, next) => {
     try {
         const userId = req.params.userId; // Assuming userId is part of the route path

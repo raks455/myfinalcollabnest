@@ -18,7 +18,7 @@ exports.getProjectList =  async (req,res,next)=>{
         res.json({status: true,success:projectData});
     } catch (error) {
         console.log(error, 'err---->');
-        next(error);
+        next(error);;
     }
 }
 

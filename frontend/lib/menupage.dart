@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:frontend/adminpanel.dart';
 import 'package:frontend/config.dart';
 import 'package:http/http.dart'as http;
 import 'package:async/async.dart';
@@ -109,11 +110,10 @@ class _MenupageState extends State<Menupage> {
       var jsonResponse = jsonDecode(response.body);
 
       if (jsonResponse['status']) {
-        // Successfully deleted account
-        // You can handle the response as needed
-        _logout(); // Log out the user after account deletion
+       
+        _logout(); 
       } else {
-        // Failed to delete account
+    
         print('Failed to delete account');
       }
     } catch (error) {
@@ -140,13 +140,30 @@ class _MenupageState extends State<Menupage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
+        
           Container(
             padding: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 10.0),
+
+         Center(
+            widthFactor: 320,
+            child: Container(
+              color: Colors.white,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Color.fromARGB(255, 224, 114, 197),
+                  onPrimary: Colors.black12,
+                  minimumSize: Size(300, 50),
+                ),
+                onPressed: _logout,
+                child: Text('Log out', style: TextStyle(color: Colors.black)),
+              ),
+            ),
+          ),
+          
                 Container(
                     height: 470,
                     width: MediaQuery.of(context).size.width * 2,

@@ -43,6 +43,10 @@ dependencies:
   firebase_auth: ^4.4.0
   firebase_core: ^2.24.2
   socket_io_client: ^2.0.3+1
+  snippet_coder_utils: ^1.0.15
+  dio: ^5.4.0
+  mailer: ^6.0.1
+  #agora_rtc_engine: ^4.2.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,10 +1,7 @@
 /*import 'dart:convert';
-import 'dart:io';
-
-
 import 'package:frontend/model/product_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/config.dart';
+import 'config.dart';
 
 class APIService {
   static var client = http.Client();
@@ -15,8 +12,8 @@ class APIService {
     };
 
     var url = Uri.http(
-      Config.url,
-      Config.productsAPI,
+     appurl,
+    productsAPI,
     );
 
     var response = await client.get(
@@ -40,13 +37,13 @@ class APIService {
     bool isEditMode,
     bool isFileSelected,
   ) async {
-    var productURL = Config.productsAPI;
+    var productURL =productsAPI;
 
     if (isEditMode) {
       productURL = productURL + "/" + model.id.toString();
     }
 
-    var url = Uri.http(Config.apiURL, productURL);
+    var url = Uri.http(appurl, productURL);
 
     var requestMethod = isEditMode ? "PUT" : "POST";
 
@@ -78,8 +75,8 @@ class APIService {
     };
 
     var url = Uri.http(
-      Config.apiURL,
-      Config.productsAPI + "/" + productId,
+      appurl,
+    productsAPI + "/" + productId,
     );
 
     var response = await client.delete(
@@ -93,4 +90,5 @@ class APIService {
       return false;
     }
   }
-}*/
+}
+*/
