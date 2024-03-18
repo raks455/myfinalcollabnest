@@ -10,6 +10,9 @@ class ProjectService{
     static async getProjectList(userId){
         const projectList = await ProjectModel.find({userId})
         return projectList;
+    } static async getAllProjectList(){
+        const projectList = await ProjectModel.find()
+        return projectList;
     }
 
    static async deleteProject(id){

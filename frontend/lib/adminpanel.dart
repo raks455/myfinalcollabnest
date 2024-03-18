@@ -1,7 +1,7 @@
-
 import 'dart:convert';
 import 'dart:math';
-
+import 'package:intl/intl.dart';
+import 'package:frontend/adminprofile.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:frontend/registration.dart';
@@ -9,13 +9,14 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:frontend/config.dart';
 import 'package:frontend/updateuserscreen.dart';
-import 'package:frontend/userlistwidget.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:http/http.dart'as http;
+import 'package:http/http.dart' as http;
+
 class AdminPanelScreen extends StatefulWidget {
   final token;
+ final Function(List<String>) onUserListReceived; // Callback function
 
-  const AdminPanelScreen({@required this.token, Key? key}) : super(key: key);
+  const AdminPanelScreen({@required this.token, Key? key,required this.onUserListReceived}) : super(key: key);
 
   @override
   _AdminPanelScreenState createState() => _AdminPanelScreenState();
@@ -23,7 +24,9 @@ class AdminPanelScreen extends StatefulWidget {
 
 class _AdminPanelScreenState extends State<AdminPanelScreen> {
   late Future<List<dynamic>> _users;
-
+  Map<String, dynamic>? _selectedUser;
+    bool _isCardSelected = false;
+   int _selectedIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -37,11 +40,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         options: Options(headers: {'Authorization': 'Bearer ${widget.token}'}),
       );
 
-      print('Raw Response: ${response}');
-      print('Content-Type: ${response.headers['content-type']}');
-      print('Response Data Type: ${response.data.runtimeType}');
-      print('Response Body: ${response.data}');
-
       if (response.data is List) {
         return response.data;
       } else {
@@ -53,35 +51,60 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     }
   }
 
+
   Future<void> updateUser(String _id) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UpdateUserScreen(userId: _id),
+        builder: (context) =>  UpdateUserScreen(userId: _id, onUserUpdated: _refreshUserList),
+      
+         //   
       ),
     );
   }
 
   Future<void> deleteUser(String _id) async {
+    if (_id == null) {
+      print('User ID is null. Unable to delete.');
+      return;
+    }
     print('Deleting User ID: $_id');
     try {
       final response = await Dio().delete(
-        '$deleteUser$_id',
+        url + 'deleteuser/$_id',
         options: Options(
           headers: {'Authorization': 'Bearer ${widget.token}'},
         ),
       );
-      print('Delete Response: $response');
-      print(response.realUri.toString());
-      _refreshUserList();
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.green,
+            content: Text('User deleted successfully'),
+          ),
+        );
+        _refreshUserList();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Failed to delete user. Error: ${response.statusCode}'),
+          ),
+        );
+      }
     } catch (e) {
       if (e is DioException) {
-        print('DioError: ${e.response?.statusCode} - ${e.response?.statusMessage}');
+        print(e);
+        print('DioError: ${e.error}');
+        print('DioError Stack Trace: ${e.stackTrace}');
+        print(
+            'DioError: ${e.response?.statusCode} - ${e.response?.statusMessage}');
         print('Response Data: ${e.response?.data}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to delete user. Error: ${e.response?.statusCode}'),
+            content:
+                Text('Failed to delete user. Error: ${e.response?.statusCode}'),
           ),
         );
       } else {
@@ -93,88 +116,160 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   Future<void> _refreshUserList() async {
     setState(() {
       _users = getAllUsers();
-      print(_users);
     });
   }
 
-  // Navigate to the screen where the admin can register a new user
   void _navigateToRegisterUser() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Registration(),
+        builder: (context) => Registration(token:widget.token,),
       ),
     );
   }
+void _toggleCardSelection() {
+    setState(() {
+        _selectedUser = _selectedUser == null ? null : null;
+    });
+  }
+
+
+ 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor:  Color.fromARGB(255, 150, 125, 241),
-        title: Text('Admin Panel'),
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 150, 125, 241),
+        title: Text('Admin Panel'),   leading:ElevatedButton(
+            onPressed: () {
+           
+            _users.then((userList) {
+      widget.onUserListReceived(userList.map<String>((user) => user['fullname'] as String).toList());
+    });
+            },style:ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 150, 125, 241), elevation: 0),
+            child: Text(' '),
+          )
       ),
-      body: FutureBuilder<List<dynamic>>(
-        future: _users,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data?.length,
-              itemBuilder: (context, index) {
-                final user = snapshot.data?[index];
-                return Dismissible(
-                  key: Key(user['_id'].toString()),
-                  onDismissed: (direction) {
-                    // Handle swipe-to-delete
-                    deleteUser(user?['_id']);
+      body: Stack(
+        children: [
+          Card(
+            elevation: 4.0,
+            margin: EdgeInsets.all(16.0),
+            child: FutureBuilder<List<dynamic>>(
+              future: _users,
+              builder: (context, snapshot) {
+              
+  if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+                return ListView.builder(
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (context, index) {
+                    final user = snapshot.data?[index];
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedUser = user;
+                        });
+                      },
+                      child: Card(
+                        elevation: 2.0,
+                        margin: EdgeInsets.symmetric(vertical: 8.0),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(user?['fullname'] ?? ''),
+                              subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Email: ${user?['email'] ?? ''}'),
+                               Text('Username:${user?['userid'] ?? ''}'),
+                                Text(
+                                    'Organization: ${user?['organization'] ?? ''}'),
+                                 Text('Role:${user?['role']??''}')
+                             ],
+                           ), trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    // Handle edit button click
+                                    updateUser(user?['_id']);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    // Handle delete button click
+                                    deleteUser(user?['_id']);
+                                  },
+                                ),
+                              ],
+                            ),
+                            ),
+                            Divider(height: 1.0, color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                    );
                   },
-                  background: Container(
-                    color: Colors.red,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
+                );}
+              },
+            ),
+          ),
+          if (_selectedUser != null)
+            Positioned.fill(
+              child: GestureDetector(onTap: _toggleCardSelection,
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  alignment: Alignment.center,
+                  child: Card(
+                    elevation: 4.0,
+                    margin: EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      width: 400,
+                      height: 220,
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Icon(Icons.delete, color: Colors.white),
+                        padding: EdgeInsets.only(left:46.0,top:50),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Full Name: ${_selectedUser!['fullname']}'),
+                            Text('Email: ${_selectedUser!['email']}'),
+                            Text('Username: ${_selectedUser!['userid']}'),
+                            Text('Organization: ${_selectedUser!['organization']}'),
+                          Text('Role:${_selectedUser!['role']}'),
+                             Text(
+                          'Registered Date: ${_formatDate(_selectedUser!['createdAt'])}',
+                        ),
+                         Text(
+                          'Updated Date: ${_formatDate(_selectedUser!['updatedAt'])}',
+                        ),
+                          
+                            
+                       ],
+                        ),
                       ),
                     ),
                   ),
-                  child: ListTile(
-                    title: Text(user?['userid'] ?? ''),
-                    subtitle: Text(user?['email'] ?? ''),
-                    onTap: () {
-                      // Handle tapping on a user item
-                      updateUser(user?['_id']);
-                    },
-                  ),
-                );
-              },
-            );
-          }
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(selectedItemColor:  Color.fromARGB(255, 150, 125, 241),
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'User List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Register User',
-          ),
+                ),
+              ),
+            ), 
         ],
-        onTap: (index) {
-          // Handle bottom navigation bar taps
-          if (index == 1) {
-            _navigateToRegisterUser();
-          }
-        },
       ),
+
+      
+      
+    
     );
   }
+
+  String _formatDate(String dateString) {
+    DateTime dateTime = DateTime.parse(dateString).toLocal();
+    return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);
+  }
 }
-
-

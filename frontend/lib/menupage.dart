@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:frontend/adminpanel.dart';
 import 'package:frontend/config.dart';
-import 'package:http/http.dart'as http;
+import 'package:http/http.dart' as http;
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/aboutapp.dart';
@@ -30,14 +30,15 @@ class Menu {
 const List<Menu> menu = const <Menu>[
   const Menu(title: 'About App'),
   const Menu(title: 'About Us'),
-  const Menu(title:'Team'),
-  const Menu(title:'Contact Us')
+  const Menu(title: 'Team'),
+  const Menu(title: 'Contact Us')
 ];
 
 class _MenupageState extends State<Menupage> {
   late String userId;
   late String userName;
   late String fullname;
+  late String role;
   late String organization;
   late String userEmail;
   int taskCount = 0;
@@ -50,12 +51,14 @@ class _MenupageState extends State<Menupage> {
 
     if (jwtDecodedToken != null) {
       userId = jwtDecodedToken['_id'] ?? '';
+      role = jwtDecodedToken['role'] ?? '';
       userName = jwtDecodedToken['username'] ?? '';
       userEmail = jwtDecodedToken['email'] ?? '';
       organization = jwtDecodedToken['organization'] ?? '';
       fullname = jwtDecodedToken['fullname'] ?? '';
     } else {
       userId = '';
+      role = '';
       userName = '';
       userEmail = '';
       organization = '';
@@ -72,7 +75,8 @@ class _MenupageState extends State<Menupage> {
       MaterialPageRoute(builder: (context) => SignInPage()),
     );
   }
-   void _onMenuItemSelected(Menu selectedMenu) {
+
+  void _onMenuItemSelected(Menu selectedMenu) {
     if (selectedMenu.title == 'About App') {
       Navigator.push(
         context,
@@ -83,43 +87,40 @@ class _MenupageState extends State<Menupage> {
         context,
         MaterialPageRoute(builder: (context) => AboutUs()),
       );
-    }
-    else if (selectedMenu.title == 'Team') {
+    } else if (selectedMenu.title == 'Team') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Team()),
       );
-    }
-    else if (selectedMenu.title == 'Contact Us') {
+    } else if (selectedMenu.title == 'Contact Us') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ContactUs()),
       );
     }
   }
+
   void _deleteAccount() async {
     try {
       // Implement the API call to delete the user account using the user's ID (userId)
-    
+
       var response = await http.delete(
         Uri.parse(deleteUser),
         headers: {"Content-Type": "application/json"},
-        
       );
- 
+
       var jsonResponse = jsonDecode(response.body);
 
       if (jsonResponse['status']) {
-       
-        _logout(); 
+        _logout();
       } else {
-    
         print('Failed to delete account');
       }
     } catch (error) {
       print('Error deleting account: $error');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -128,42 +129,25 @@ class _MenupageState extends State<Menupage> {
           backgroundColor: Color.fromARGB(255, 150, 125, 241),
           title: Text("Profile"),
           actions: [
-          
-                PopupMenuButton<Menu>(itemBuilder:(BuildContext context){
-                  return menu.map((Menu menu){
-                    return PopupMenuItem<Menu>(value:menu,child:Text(menu.title));
+            PopupMenuButton<Menu>(
+                itemBuilder: (BuildContext context) {
+                  return menu.map((Menu menu) {
+                    return PopupMenuItem<Menu>(
+                        value: menu, child: Text(menu.title));
                   }).toList();
-                },onSelected:_onMenuItemSelected
-                ),
+                },
+                onSelected: _onMenuItemSelected),
           ]),
       backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        
           Container(
             padding: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 10.0),
-
-         Center(
-            widthFactor: 320,
-            child: Container(
-              color: Colors.white,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 224, 114, 197),
-                  onPrimary: Colors.black12,
-                  minimumSize: Size(300, 50),
-                ),
-                onPressed: _logout,
-                child: Text('Log out', style: TextStyle(color: Colors.black)),
-              ),
-            ),
-          ),
-          
                 Container(
                     height: 470,
                     width: MediaQuery.of(context).size.width * 2,
@@ -199,7 +183,7 @@ class _MenupageState extends State<Menupage> {
                         ),
                         Center(
                           child: Text(
-                            "@" + userName,
+                           role,
                             style: TextStyle(
                                 fontSize: 17.0,
                                 fontWeight: FontWeight.w700,
@@ -304,7 +288,6 @@ class _MenupageState extends State<Menupage> {
               ),
             ),
           ),
-          
         ],
       ),
     );

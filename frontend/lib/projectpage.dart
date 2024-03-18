@@ -161,56 +161,56 @@ class _ProjectPageState extends State<ProjectPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: EdgeInsets.only(
-                top: 60.0, left: 30.0, right: 30.0, bottom: 30.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Project Timer',
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(
-        width: 80,
-        child: FloatingActionButton(
-          backgroundColor: Color.fromARGB(255, 150, 125, 241),
-          focusColor: Colors.white,
-          foregroundColor: Colors.white,
-          onPressed: () {
+      //     Container(
+      //       padding: EdgeInsets.only(
+      //           top: 60.0, left: 30.0, right: 30.0, bottom: 30.0),
+      //       child: Column(
+      //         crossAxisAlignment: CrossAxisAlignment.start,
+      //         children: [
+      //           Text(
+      //             'Project Timer',
+      //             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w500),
+      //           ),
+      // //           SizedBox(
+      // //   width: 80,
+      // //   child: FloatingActionButton(
+      // //     backgroundColor: Color.fromARGB(255, 150, 125, 241),
+      // //     focusColor: Colors.white,
+      // //     foregroundColor: Colors.white,
+      // //     onPressed: () {
        
-            toggleStopwatch();
-          },
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-          elevation: 5,
-          child: Container(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 12.0, right: 2.0),
-              child: Text(
-                _isRunning ? 'Pause' : 'Play',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          tooltip: 'Toggle Stopwatch',
-        ),
-      ),
-                SizedBox(height: 10.0),
-                Text(
-                  _formattedTime ?? '00:00:00',
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(height: 8.0),
-                Text(
-                  '$projectCount Projects',
-                  style: TextStyle(fontSize: 20,color:Colors.black45),
-                ),
-              ],
-            ),
-          ),
+      // //       toggleStopwatch();
+      // //     },
+      // //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+      // //     elevation: 5,
+      // //     child: Container(
+      // //       child: Padding(
+      // //         padding: const EdgeInsets.only(left: 12.0, right: 2.0),
+      // //         child: Text(
+      // //           _isRunning ? 'Pause' : 'Play',
+      // //           style: TextStyle(
+      // //             color: Colors.white,
+      // //             fontWeight: FontWeight.bold,
+      // //           ),
+      // //         ),
+      // //       ),
+      // //     ),
+      // //     tooltip: 'Toggle Stopwatch',
+      // //   ),
+      // // ),
+      //           // SizedBox(height: 10.0),
+      //           // Text(
+      //           //   _formattedTime ?? '00:00:00',
+      //           //   style: TextStyle(fontSize: 20),
+      //           // ),
+      //           // SizedBox(height: 8.0),
+      //           // Text(
+      //           //   '$projectCount Projects',
+      //           //   style: TextStyle(fontSize: 20,color:Colors.black45),
+      //           // ),
+      //         ],
+      //       ),
+      //     ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(

@@ -1,5 +1,5 @@
 const ToDoService = require('../services/todo.service');
-
+const jwt = require('jsonwebtoken');
 exports.createToDo =  async (req,res,next)=>{
     try {
         const { userId,title, desc,timestamp } = req.body;
@@ -15,6 +15,17 @@ exports.getToDoList =  async (req,res,next)=>{
     try {
         const { userId } = req.body;
         let todoData = await ToDoService.getUserToDoList(userId);
+        res.json({status: true,success:todoData});
+    } catch (error) {
+        console.log(error, 'err---->');
+        next(error);
+    }
+}
+
+exports.getAllToDoList =  async (req,res,next)=>{
+    try {
+        const {} = req.body;
+        let todoData = await ToDoService.getAllUserToDoList();
         res.json({status: true,success:todoData});
     } catch (error) {
         console.log(error, 'err---->');

@@ -21,6 +21,16 @@ exports.getProjectList =  async (req,res,next)=>{
         next(error);;
     }
 }
+exports.getAllProjectList =  async (req,res,next)=>{
+    try {
+        const {} = req.body;
+        let projectData = await ProjectService.getAllProjectList();
+        res.json({status: true,success:projectData});
+    } catch (error) {
+        console.log(error, 'err---->');
+        next(error);;
+    }
+}
 
 exports.deleteProject =  async (req,res,next)=>{
     try {

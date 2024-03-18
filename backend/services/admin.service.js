@@ -7,7 +7,7 @@ class AdminServices{
         try{
                 console.log("-----Email -Username-- Password-----",email,userid,fullname,organization,password);
                 
-                const createAdmin = new AdminModel({email,userid,fullname,organization,password});
+                const createAdmin = new UserModel({email,userid,fullname,organization,password});
                 return await createAdmin.save();
         }catch(err){
             throw err;
@@ -15,7 +15,7 @@ class AdminServices{
     }
     static async getAllUsers() {
       try {
-        return await UserModel.find({}).select('-password');
+        return await UserModel.find();
       } catch (error) {
         throw error;
       }
@@ -30,7 +30,7 @@ class AdminServices{
 
     static async checkUser(email){
         try {
-            return await UserModel.findOne({email});
+            return await AdminModel.findOne({email});
         } catch (error) {
             throw error;
         }
@@ -39,26 +39,50 @@ class AdminServices{
     static async generateAccessToken(tokenData,JWTSecret_Key,JWT_EXPIRE){
         return jwt.sign(tokenData, JWTSecret_Key, { expiresIn: JWT_EXPIRE });
     }
-    static async getUserById(userId) {
+    static async getUserById(_id,includePassword = false) {
         try {
-          return await UserModel.findById(userId);
+          let query=UserModel.findById(_id);
+        
+          if (!includePassword) {
+            // Exclude the password field if includePassword is false
+            query = query.select('-password');
+          }
+          return await query.exec();
+
         } catch (error) {
           throw error;
         }
       }
     
-      static async updateUser(userId, updatedData) {
+     
+      
+      static async updateUser(_id, updatedData) {
         try {
           // Assuming updatedData is an object containing the fields to be updated
-          return await UserModel.findByIdAndUpdate(userId, updatedData, { new: true });
+          if (updatedData.password) {
+            // Hash the password if it is included in the updatedData
+           
+            const saltRounds = 20;
+    
+            // Hash the password and update the updatedData object
+            const hashedPassword = await bcrypt.hash(updatedData.password, saltRounds);
+            updatedData.password = hashedPassword;
+    
+           
+          }
+    
+          // Now update the user in the database
+          const updatedUser = await UserModel.findByIdAndUpdate(_id, updatedData, { new: true });
+    
+    
+          return updatedUser;
         } catch (error) {
           throw error;
         }
       }
-    
-      static async deleteUser(userId) {
+      static async deleteUser(_id) {
         try {
-          return await UserModel.findByIdAndDelete(userId);
+          return await UserModel.findByIdAndDelete(_id);
         } catch (error) {
           throw error;
         }

@@ -1,4 +1,7 @@
+
 import 'package:flutter/material.dart';
+import 'package:frontend/updateuserscreen.dart';
+import 'package:provider/provider.dart';
 import 'package:frontend/taskproject.dart';
 import 'home.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -9,12 +12,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 //await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(
-    token: prefs.getString('token'),
+  runApp(ChangeNotifierProvider(
+    create: (context) => UserProvider(),
+    child: MyApp(
+      token: prefs.getString('token'),
+    ),
   ));
 }
  
 class MyApp extends StatelessWidget {
+ 
   final token;
   const MyApp({
     @required this.token,

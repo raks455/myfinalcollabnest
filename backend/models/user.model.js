@@ -14,6 +14,10 @@ const userSchema = new Schema({
             "Email format is not correct",
         ],
         unique: true,
+    }, role: {
+        type: String,
+        default: 'regular', // Set default role for regular users
+        enum: ['regular', 'admin', 'super admin','project manager','ceo','senior developer','intern','hr'] // Define the allowed roles
     },
     userid:{
         type: String,
@@ -25,6 +29,7 @@ const userSchema = new Schema({
             "UserID format is not correct",
         ],
     },
+  
     fullname:{
         type:String,
         required:[true,"Name of user is required"]

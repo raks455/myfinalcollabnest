@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
+import 'package:frontend/adminpanel.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:frontend/adminprofile.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -10,6 +13,8 @@ import 'package:mailer/smtp_server/gmail.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Registration extends StatefulWidget {
+  final token;
+  const Registration({@required this.token, Key? key}) : super(key: key);
   @override
   _RegistrationState createState() => _RegistrationState();
 }
@@ -21,19 +26,17 @@ class _RegistrationState extends State<Registration> {
   TextEditingController fullnameController = TextEditingController();
   TextEditingController organizationController = TextEditingController();
   bool _isNotValidate = false;
+  int _selectedIndex = 0;
   bool _isPasswordVisible = false;
   bool _isRegistered = false;
   void sendRegistrationEmail(
       String userid, String email, String password) async {
-    // Configure your SMTP server details
-    // String fullname = "Rakshya Bastola";
-    // String email = "rakshyabastola32@gmail.com";
-    // String password = "raksjssj";
-    final smtpServer = gmail("santusharma1278@gmail.com","idxr navf rrim bqcz");
+    final smtpServer =
+        gmail("santusharma1278@gmail.com", "oehc yjfl rbek ayuy");
 
     // Create the email message
     final message = Message()
-      ..from = Address("santusharma1278@gmail.com","Santu Sharma")
+      ..from = Address("santusharma1278@gmail.com", "Santu Sharma")
       ..recipients.add('rakshyabastola32@gmail.com')
       ..subject = 'Welcome to Your App!'
       ..text = 'Hello $userid,\n\n'
@@ -41,11 +44,10 @@ class _RegistrationState extends State<Registration> {
           'Your login credentials:\n'
           'Username: $userid\n'
           'Password: $password\n\n'
-          'You can now log in using these credentials.';
+          'You can now log in using these credentials.\n  Team , \n Collabnest' ;
     try {
       final sendReport = await send(message, smtpServer);
       print('Message sent: ' + sendReport.toString());
-      
     } on MailerException catch (e) {
       print('Message not sent.');
       for (var p in e.problems) {
@@ -81,7 +83,8 @@ class _RegistrationState extends State<Registration> {
         "userid": useridController.text,
         "password": passwordController.text,
         "fullname": fullnameController.text,
-        "organization": organizationController.text
+        "organization": organizationController.text,
+        "roles":selectedRole
       };
 
       var response = await http.post(Uri.parse(registration),
@@ -96,11 +99,7 @@ class _RegistrationState extends State<Registration> {
         setState(() {
           print(jsonResponse);
           _isRegistered = true;
-          sendRegistrationEmail(
-            useridController.text,
-            emailController.text,
-            passwordController.text,
-          );
+          
         });
       } else {
         print("Something Went Wrong");
@@ -125,10 +124,19 @@ class _RegistrationState extends State<Registration> {
 
     return password.length >= 8 && hasNumber && hasCapitalLetter;
   }
+String selectedRole = 'regular'; // Default role
 
-  void _navigateToUserList() {
-    Navigator.pop(context);
-  }
+  List<String> roles = [
+    'regular',
+    'admin',
+    'super admin',
+    'project manager',
+    'ceo',
+    'senior developer',
+    'intern',
+    'hr'
+  ];
+  
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +156,7 @@ class _RegistrationState extends State<Registration> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   HeightBox(10),
-                  "ADD USERS".text.size(22).white.make(),
+              
                   SizedBox(height: 20),
                   TextField(
                     controller: fullnameController,
@@ -206,6 +214,7 @@ class _RegistrationState extends State<Registration> {
                       errorStyle: TextStyle(color: Colors.white),
                       //    errorText: _isNotValidate ? "Enter Proper Info" : null,
                       hintText: "Organization",
+                        prefixIcon: Icon(Icons.business, color: Colors.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
@@ -243,7 +252,34 @@ class _RegistrationState extends State<Registration> {
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
                     ),
-                  ).p4().px24(),
+                  ).p4().px24(),SizedBox(height:5,),Container(
+                    
+  decoration: BoxDecoration(color: Colors.white,
+    border: Border.all(
+      color: Color.fromARGB(255, 75, 74, 74),
+      width: 1.0, // Adjust the width as needed
+    ),
+    borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
+  ),child:Column(children:[ SizedBox(child:Padding(padding:EdgeInsets.only(right:150,top:10),child:Text("Select User Role",textAlign:TextAlign.left,))
+  ),Container(
+    width: 298,decoration:BoxDecoration(color:  Colors.white,borderRadius:BorderRadius.circular(10)),
+    child: DropdownButton<String>(
+      value: selectedRole,
+      onChanged: (String? newValue) {
+        setState(() {
+          selectedRole = newValue!;
+        });
+      },
+      items: roles.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    ).p4().px24(),
+  ),])
+ 
+),
                   GestureDetector(
                     onTap: () {
                       registerUser();
@@ -276,25 +312,7 @@ class _RegistrationState extends State<Registration> {
             ),
           ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Color.fromARGB(255, 150, 125, 241),
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: 'User List',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              label: 'Register User',
-            ),
-          ],
-          onTap: (index) {
-            // Handle bottom navigation bar taps
-            if (index == 0) {
-              _navigateToUserList();
-            }
-          },
-        ),
+        
       ),
     );
   }
